@@ -1,0 +1,25 @@
+name: sf_udp
+version: "1.0.0"
+config-version: 2
+
+profile: sf_udp
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  sf_udp:
+    staging:
+      +schema: STAGING
+      +materialized: view
+    intermediate:
+      +schema: STAGING
+      +materialized: table
+    marts:
+      +schema: MARTS
+      +materialized: table

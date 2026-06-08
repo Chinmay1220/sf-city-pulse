@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+  - name: raw
+    database: "{{ env_var('SNOWFLAKE_DATABASE', 'SF_UDP_POC') }}"
+    schema: RAW
+    tables:
+      - name: raw_311_requests
+        identifier: RAW_311_REQUESTS
+        config:
+          loaded_at_field: try_to_timestamp_ntz(requested_datetime)
+        columns:
+          - name: service_request_id
+          - name: requested_datetime
+          - name: closed_date
+          - name: status_description
+          - name: service_name
+          - name: supervisor_district
+          - name: neighborhood
+          - name: lat
+          - name: long
+      - name: raw_building_permits
+        identifier: RAW_BUILDING_PERMITS
+        config:
+          loaded_at_field: try_to_timestamp_ntz(permit_creation_date)
+        columns:
+          - name: permit_number
+          - name: permit_type
+          - name: permit_creation_date
+          - name: status
+          - name: neighborhoods_analysis_boundaries
+          - name: supervisor_district
+          - name: estimated_cost
+          - name: street_name

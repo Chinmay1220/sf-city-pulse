@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: stg_311_requests
+    description: Cleaned 311 service request records from SF Open Data.
+    columns:
+      - name: service_request_id
+        description: Unique 311 service request identifier.
+        tests:
+          - not_null
+          - unique
+      - name: requested_at
+        tests:
+          - not_null
+      - name: status_description
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Open", "Closed"]
+      - name: neighborhood
+        tests:
+          - not_null
+      - name: days_to_close
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0
+
+  - name: stg_building_permits
+    description: Cleaned active building permit records from SF Open Data.
+    columns:
+      - name: permit_number
+        description: Unique building permit identifier after latest-record dedupe.
+        tests:
+          - not_null
+          - unique
+      - name: permit_created_date
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["issued", "approved", "filed", "reinstated"]
+      - name: neighborhood
+        tests:
+          - not_null

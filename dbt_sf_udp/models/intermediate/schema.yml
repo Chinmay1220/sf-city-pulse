@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: int_311_by_neighborhood
+    description: Monthly 311 service metrics by neighborhood and supervisor district.
+    columns:
+      - name: neighborhood
+        tests:
+          - not_null
+      - name: month
+        tests:
+          - not_null
+      - name: total_requests
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0
+      - name: avg_days_to_close
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0
+
+  - name: int_permits_by_neighborhood
+    description: Monthly building permit metrics by neighborhood and supervisor district.
+    columns:
+      - name: neighborhood
+        tests:
+          - not_null
+      - name: month
+        tests:
+          - not_null
+      - name: total_permits
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0

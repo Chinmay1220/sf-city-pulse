@@ -1,0 +1,12 @@
+snowflake_organization_name = "YOUR_ORG"
+snowflake_account_name      = "YOUR_ACCOUNT"
+snowflake_user              = "YOUR_ADMIN_USER"
+snowflake_password          = "YOUR_ADMIN_PASSWORD"
+snowflake_admin_role        = "ACCOUNTADMIN"
+
+database_name     = "SF_UDP_POC"
+warehouse_name    = "TRANSFORM_WH"
+transformer_role  = "TRANSFORMER"
+dbt_user_name     = "DBT_USER"
+dbt_user_login_name = "DBT_USER"
+dbt_user_password = "CHANGE_ME_STRONG_PASSWORD"
