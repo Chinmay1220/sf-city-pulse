@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import os
 from datetime import date, timedelta
-from typing import Iterable
+from collections.abc import Iterable, Iterator
 
 import pandas as pd
 import requests
@@ -47,21 +47,21 @@ def get_snowflake_connection(schema: str = "RAW"):
     )
 
 
-def fetch_socrata_records(
+def iter_socrata_batches(
     url: str,
     select_expressions: Iterable[str],
     date_field: str,
     since: date,
-    max_rows: int,
+    max_rows: int | None = None,
     page_size: int = 50_000,
-) -> list[dict]:
+) -> Iterator[list[dict]]:
     app_token = get_env("SOCRATA_APP_TOKEN")
     headers = {"X-App-Token": app_token} if app_token else {}
-    records: list[dict] = []
     offset = 0
+    total_records = 0
 
-    while len(records) < max_rows:
-        limit = min(page_size, max_rows - len(records))
+    while max_rows is None or total_records < max_rows:
+        limit = page_size if max_rows is None else min(page_size, max_rows - total_records)
         params = {
             "$select": ",".join(select_expressions),
             "$where": f"{date_field} >= '{since.isoformat()}'",
@@ -78,13 +78,35 @@ def fetch_socrata_records(
         if not batch:
             break
 
-        records.extend(batch)
+        yield batch
+
         offset += len(batch)
+        total_records += len(batch)
 
         if len(batch) < limit:
             break
 
-    LOGGER.info("Fetched %s total records from %s", len(records), url)
+    LOGGER.info("Fetched %s total records from %s", total_records, url)
+
+
+def fetch_socrata_records(
+    url: str,
+    select_expressions: Iterable[str],
+    date_field: str,
+    since: date,
+    max_rows: int | None = None,
+    page_size: int = 50_000,
+) -> list[dict]:
+    records: list[dict] = []
+    for batch in iter_socrata_batches(
+        url=url,
+        select_expressions=select_expressions,
+        date_field=date_field,
+        since=since,
+        max_rows=max_rows,
+        page_size=page_size,
+    ):
+        records.extend(batch)
     return records
 
 

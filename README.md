@@ -33,6 +33,9 @@ plus reload into Snowflake RAW tables for an idempotent POC workflow.
 The 311 API's current neighborhood field is `neighborhoods_sffind_boundaries`;
 the ingestion layer aliases it to `neighborhood` so the warehouse model stays
 business-readable.
+The ingestion jobs stream paginated API batches into Snowflake, so the project
+can load the full two-year source window without holding the entire dataset in
+local memory.
 
 ## Repository Layout
 
@@ -156,18 +159,20 @@ The dashboard has three tabs:
 
 ## Key Findings
 
-Based on the initial two-year POC load:
+Based on the full two-year POC load:
 
-- 97,755 cleaned 311 requests and 17,779 active building permits were modeled.
-- The citywide average 311 closure time is 22.81 days; no supervisor district
+- 1,688,799 raw 311 requests and 51,099 raw permit records were loaded.
+- 1,661,695 cleaned 311 requests and 18,698 active building permits were modeled.
+- The citywide average 311 closure time is 9.38 days; no supervisor district
   is above 2x that city average.
-- District 5 has the highest average closure time among districts at 29.76
-  days, followed by District 7 at 26.57 days and District 8 at 25.06 days.
+- District 7 has the highest average closure time among valid districts at
+  13.55 days, followed by District 10 at 10.79 days and District 8 at 10.38
+  days.
 - Among neighborhoods with at least 500 closed 311 requests, Golden Gate Park
-  has the slowest average closure time at 67.25 days.
-- Presidio Heights has the highest construction-to-complaint ratio in the POC
-  mart among neighborhoods with at least 100 requests: 372 permits against 273
-  311 requests, a ratio of 1.363.
+  has the slowest average closure time at 29.27 days.
+- Seacliff has the highest construction-to-complaint ratio in the POC mart
+  among neighborhoods with at least 100 requests: 174 permits against 1,376
+  311 requests, a ratio of 0.126.
 
 ## Interview Talking Points
 
