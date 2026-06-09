@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 
 import pandas as pd
@@ -12,7 +13,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MART_TABLE = "MARTS.MART_NEIGHBORHOOD_EQUITY"
+LOGGER = logging.getLogger(__name__)
+MART_NAME = "MART_NEIGHBORHOOD_EQUITY"
 
 
 def read_setting(name: str, default: str | None = None) -> str | None:
@@ -44,6 +46,37 @@ def get_connection():
     )
 
 
+def get_mart_table() -> str:
+    database = read_setting("SNOWFLAKE_DATABASE", "SF_UDP_POC")
+    schema = read_setting("SNOWFLAKE_SCHEMA", "MARTS")
+    return f"{database}.{schema}.{MART_NAME}"
+
+
+def render_data_load_error(error: Exception) -> None:
+    LOGGER.exception("Failed to load Snowflake mart")
+    st.error("Could not load the Snowflake mart.")
+    st.info(
+        "Check Streamlit Cloud secrets. The hosted app should use DBT_USER with "
+        "the TRANSFORMER role, not the ACCOUNTADMIN login."
+    )
+    with st.expander("Deployment context", expanded=True):
+        st.code(
+            "\n".join(
+                [
+                    f"account: {read_setting('SNOWFLAKE_ACCOUNT', 'missing')}",
+                    f"user: {read_setting('SNOWFLAKE_USER', 'missing')}",
+                    f"role: {read_setting('SNOWFLAKE_ROLE', 'TRANSFORMER')}",
+                    f"warehouse: {read_setting('SNOWFLAKE_WAREHOUSE', 'TRANSFORM_WH')}",
+                    f"database: {read_setting('SNOWFLAKE_DATABASE', 'SF_UDP_POC')}",
+                    f"schema: {read_setting('SNOWFLAKE_SCHEMA', 'MARTS')}",
+                    f"mart: {get_mart_table()}",
+                    f"error_type: {type(error).__name__}",
+                ]
+            )
+        )
+    st.stop()
+
+
 @st.cache_data(ttl=600)
 def load_data() -> pd.DataFrame:
     query = f"""
@@ -59,7 +92,7 @@ def load_data() -> pd.DataFrame:
             total_estimated_cost,
             active_permit_count,
             construction_to_complaint_ratio
-        from {MART_TABLE}
+        from {get_mart_table()}
     """
     with get_connection() as conn:
         df = pd.read_sql(query, conn)
@@ -491,7 +524,11 @@ def main() -> None:
     st.title("SF City Pulse")
     st.caption("311 response equity and construction activity across San Francisco neighborhoods")
 
-    df = load_data()
+    try:
+        df = load_data()
+    except Exception as error:
+        render_data_load_error(error)
+
     if df.empty:
         st.warning("No mart rows found. Run ingestion and dbt before opening the dashboard.")
         st.stop()
