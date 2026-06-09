@@ -22,6 +22,7 @@ terraform/*_override.tf
 terraform/*_override.tf.json
 
 dashboard/.streamlit/secrets.toml
+.streamlit/secrets.toml
 
 dbt_sf_udp/target/
 dbt_sf_udp/dbt_packages/
