@@ -151,11 +151,16 @@ SF_UDP_POC.MARTS.MART_NEIGHBORHOOD_EQUITY
 streamlit run dashboard\app.py
 ```
 
-The dashboard has three tabs:
+The dashboard has four tabs:
 
-- City Overview: KPI cards and top 10 neighborhoods by 311 volume
-- Neighborhood Equity Map: response-time comparison by supervisor district
-- Construction vs Complaints: permit volume versus 311 requests by neighborhood
+- City Overview: KPI cards, monthly activity trends, top 311 neighborhoods,
+  and slow-response neighborhood detail
+- District Equity: response-time index, city-versus-district trend comparison,
+  and district-level open request shares
+- Construction vs Complaints: permit volume, estimated construction value, and
+  permit-to-complaint ratios by neighborhood
+- Neighborhood Drilldown: selected-neighborhood monthly profile and
+  district-level breakdown
 
 ## Key Findings
 
@@ -171,8 +176,8 @@ Based on the full two-year POC load:
 - Among neighborhoods with at least 500 closed 311 requests, Golden Gate Park
   has the slowest average closure time at 29.27 days.
 - Seacliff has the highest construction-to-complaint ratio in the POC mart
-  among neighborhoods with at least 100 requests: 174 permits against 1,376
-  311 requests, a ratio of 0.126.
+  among neighborhoods with at least 100 requests: 157 permits against 1,376
+  311 requests, a ratio of 0.114.
 
 ## Interview Talking Points
 

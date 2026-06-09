@@ -21,6 +21,7 @@ joined as (
     from requests
     full outer join permits
         on requests.neighborhood = permits.neighborhood
+       and requests.supervisor_district = permits.supervisor_district
        and requests.month = permits.month
 )
 
