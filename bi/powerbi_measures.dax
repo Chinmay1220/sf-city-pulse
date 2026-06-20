@@ -1,0 +1,64 @@
+Total 311 Requests =
+SUM ( BI_NEIGHBORHOOD_DASHBOARD[TOTAL_311_REQUESTS] )
+
+Open 311 Requests =
+SUM ( BI_NEIGHBORHOOD_DASHBOARD[OPEN_REQUEST_COUNT] )
+
+Open Request Share =
+DIVIDE ( [Open 311 Requests], [Total 311 Requests] )
+
+Total Permits =
+SUM ( BI_NEIGHBORHOOD_DASHBOARD[TOTAL_PERMITS] )
+
+Active Permits =
+SUM ( BI_NEIGHBORHOOD_DASHBOARD[ACTIVE_PERMIT_COUNT] )
+
+Total Estimated Cost =
+SUM ( BI_NEIGHBORHOOD_DASHBOARD[TOTAL_ESTIMATED_COST] )
+
+Avg Days To Close =
+DIVIDE (
+    SUMX (
+        BI_NEIGHBORHOOD_DASHBOARD,
+        BI_NEIGHBORHOOD_DASHBOARD[AVG_DAYS_TO_CLOSE]
+            * BI_NEIGHBORHOOD_DASHBOARD[TOTAL_311_REQUESTS]
+    ),
+    SUMX (
+        FILTER (
+            BI_NEIGHBORHOOD_DASHBOARD,
+            NOT ISBLANK ( BI_NEIGHBORHOOD_DASHBOARD[AVG_DAYS_TO_CLOSE] )
+        ),
+        BI_NEIGHBORHOOD_DASHBOARD[TOTAL_311_REQUESTS]
+    )
+)
+
+Construction To Complaint Ratio =
+DIVIDE ( [Total Permits], [Total 311 Requests] )
+
+Estimated Cost Per Request =
+DIVIDE ( [Total Estimated Cost], [Total 311 Requests] )
+
+Estimated Cost Per Permit =
+DIVIDE ( [Total Estimated Cost], [Total Permits] )
+
+City Avg Days To Close =
+DIVIDE (
+    SUMX (
+        ALLSELECTED ( BI_NEIGHBORHOOD_DASHBOARD ),
+        BI_NEIGHBORHOOD_DASHBOARD[AVG_DAYS_TO_CLOSE]
+            * BI_NEIGHBORHOOD_DASHBOARD[TOTAL_311_REQUESTS]
+    ),
+    SUMX (
+        FILTER (
+            ALLSELECTED ( BI_NEIGHBORHOOD_DASHBOARD ),
+            NOT ISBLANK ( BI_NEIGHBORHOOD_DASHBOARD[AVG_DAYS_TO_CLOSE] )
+        ),
+        BI_NEIGHBORHOOD_DASHBOARD[TOTAL_311_REQUESTS]
+    )
+)
+
+Response Index Vs City =
+DIVIDE ( [Avg Days To Close], [City Avg Days To Close] )
+
+Neighborhood Count =
+DISTINCTCOUNT ( BI_NEIGHBORHOOD_DASHBOARD[NEIGHBORHOOD] )

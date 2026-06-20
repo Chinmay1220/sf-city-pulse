@@ -33,3 +33,46 @@ models:
           - assert_column_gte:
               arguments:
                 min_value: 0
+  - name: bi_neighborhood_dashboard
+    description: BI-ready monthly neighborhood view for Power BI and Tableau dashboards, with date labels, district labels, KPI helper fields, and equity flags.
+    columns:
+      - name: neighborhood
+        description: San Francisco neighborhood name from the modeled source data.
+        tests:
+          - not_null
+      - name: month_start_date
+        description: Month-level reporting date used for trend charts and BI date tables.
+        tests:
+          - not_null
+      - name: district_label
+        description: Presentation-ready supervisor district label for slicers and legends.
+      - name: total_311_requests
+        description: Monthly 311 service request count for the neighborhood and district.
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0
+      - name: avg_days_to_close
+        description: Average days to close 311 requests at the monthly neighborhood grain.
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0
+      - name: total_permits
+        description: Monthly building permit count for the neighborhood and district.
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0
+      - name: total_estimated_cost
+        description: Monthly estimated construction value for modeled building permits.
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0
+      - name: neighborhood_response_index_vs_city
+        description: Neighborhood average closure time divided by the city monthly average.
+        tests:
+          - assert_column_gte:
+              arguments:
+                min_value: 0

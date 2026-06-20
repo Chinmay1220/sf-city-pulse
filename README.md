@@ -1,10 +1,25 @@
-# SF City Pulse - Unified Data Platform POC
+<h1 align="center">SF City Pulse</h1>
+
+<p align="center">
+  <strong>Neighborhood-level 311 response equity and construction activity on a Snowflake, dbt, and BI stack.</strong>
+</p>
+
+<p align="center">
+  <code>Snowflake</code> | <code>dbt</code> | <code>Terraform</code> | <code>Streamlit</code> | <code>Power BI</code> | <code>Tableau</code>
+</p>
+
+<p align="center">
+  <a href="https://sf-city-pulse.streamlit.app/">Live Streamlit app</a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/sf-city-pulse-dashboard.png" alt="SF City Pulse dashboard preview showing 311 KPIs, monthly request trends, neighborhood request volume, construction pressure, and district watchlist" width="100%">
+</p>
 
 > A portfolio proof-of-concept inspired by DataSF's Unified Data Platform work.
 > It asks: are San Francisco neighborhoods with high construction activity also
 > generating disproportionate 311 complaints, and are response times equitable
 > across supervisor districts?
-Live app - https://sf-city-pulse.streamlit.app/
 
 ## Architecture
 
@@ -16,13 +31,15 @@ flowchart LR
     D --> E[dbt intermediate models]
     E --> F[dbt MARTS schema]
     F --> G[Streamlit dashboard]
+    F --> I[Power BI / Tableau dashboard]
     H[Terraform] --> C
     H --> F
 ```
 
 ## Stack
 
-Snowflake, dbt Core, Terraform, Python, Streamlit, Plotly, SF Open Data.
+Snowflake, dbt Core, Terraform, Python, Streamlit, Plotly, Power BI/Tableau,
+SF Open Data.
 
 ## Data Sources
 
@@ -45,6 +62,7 @@ terraform/        Snowflake database, schemas, warehouse, role, and dbt user
 ingestion/        Socrata API ingestion into Snowflake RAW tables
 dbt_sf_udp/       dbt project: staging, intermediate, marts, tests, macros
 dashboard/        Streamlit dashboard over the mart model
+bi/               Power BI and Tableau integration guide, measures, and visuals
 scripts/          Local operational helpers, including SQL provisioning fallback
 .env.example      Local environment template
 requirements.txt  Python dependencies
@@ -146,6 +164,12 @@ The final dashboard table is:
 SF_UDP_POC.MARTS.MART_NEIGHBORHOOD_EQUITY
 ```
 
+The BI-ready dashboard view for Power BI and Tableau is:
+
+```text
+SF_UDP_POC.MARTS.BI_NEIGHBORHOOD_DASHBOARD
+```
+
 ## Launch Dashboard
 
 ```powershell
@@ -162,6 +186,22 @@ The dashboard has four tabs:
   permit-to-complaint ratios by neighborhood
 - Neighborhood Drilldown: selected-neighborhood monthly profile and
   district-level breakdown
+
+## Launch Power BI or Tableau
+
+For a more polished BI dashboard, connect Power BI or Tableau directly to the
+dbt view:
+
+```text
+SF_UDP_POC.MARTS.BI_NEIGHBORHOOD_DASHBOARD
+```
+
+The `bi/` folder includes:
+
+- Snowflake connection steps for Power BI and Tableau
+- Power BI DAX measures in `bi/powerbi_measures.dax`
+- Tableau calculated fields in `bi/tableau_calculated_fields.md`
+- Recommended dashboard pages that mirror the Streamlit analytics flow
 
 ## Key Findings
 
