@@ -9,7 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://sf-city-pulse.streamlit.app/">Live Streamlit app</a>
+  <strong>Application:</strong>
+  <a href="https://sf-city-pulse.streamlit.app/">https://sf-city-pulse.streamlit.app/</a>
 </p>
 
 <p align="center">
@@ -218,6 +219,14 @@ SF_UDP_POC.MARTS.BI_NEIGHBORHOOD_DASHBOARD
 ```
 
 ## Launch Dashboard
+
+Hosted application:
+
+```text
+https://sf-city-pulse.streamlit.app/
+```
+
+Run locally:
 
 ```powershell
 streamlit run dashboard\app.py
