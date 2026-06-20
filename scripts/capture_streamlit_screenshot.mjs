@@ -6,12 +6,39 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const OUTPUT = path.join(ROOT, "docs", "assets", "sf-city-pulse-streamlit.png");
+const ASSETS_DIR = path.join(ROOT, "docs", "assets");
 const PROFILE_DIR = path.join(ROOT, ".tmp-streamlit-chrome-profile");
 const URL = process.argv[2] ?? "http://127.0.0.1:8501/?embed=true";
 const PORT = 9300 + Math.floor(Math.random() * 500);
 const WIDTH = 1600;
 const HEIGHT = 1100;
+
+const captures = [
+  {
+    tab: "City Overview",
+    output: "sf-city-pulse-streamlit.png",
+    markers: ["Total 311 requests", "Monthly activity trend"],
+    minPlots: 2,
+  },
+  {
+    tab: "District Equity",
+    output: "sf-city-pulse-streamlit-district-equity.png",
+    markers: ["District detail", "District response time index"],
+    minPlots: 2,
+  },
+  {
+    tab: "Construction vs Complaints",
+    output: "sf-city-pulse-streamlit-construction.png",
+    markers: ["Minimum 311 requests for rankings", "Construction activity versus 311 complaints"],
+    minPlots: 1,
+  },
+  {
+    tab: "Neighborhood Drilldown",
+    output: "sf-city-pulse-streamlit-neighborhood.png",
+    markers: ["Neighborhood", "Mission monthly profile"],
+    minPlots: 1,
+  },
+];
 
 const browserCandidates = [
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -111,7 +138,7 @@ async function connect(webSocketDebuggerUrl) {
   return { ws, send, events };
 }
 
-async function waitForStreamlitContent(client) {
+async function waitForStreamlitContent(client, markers, minPlots = 1) {
   for (let attempt = 0; attempt < 80; attempt += 1) {
     const result = await client.send("Runtime.evaluate", {
       expression: `(() => {
@@ -124,11 +151,9 @@ async function waitForStreamlitContent(client) {
     });
     const page = result.result?.value ?? {};
     const text = page.text ?? "";
-    if (
-      text.includes("City Overview") &&
-      text.includes("Total 311 requests") &&
-      (page.plotlyCount >= 2 || page.svgCount >= 2)
-    ) {
+    const hasMarkers = markers.every((marker) => text.includes(marker));
+    const renderedPlots = Math.max(page.plotlyCount ?? 0, page.svgCount ?? 0);
+    if (hasMarkers && renderedPlots >= minPlots) {
       await sleep(5000);
       return;
     }
@@ -137,8 +162,41 @@ async function waitForStreamlitContent(client) {
   await sleep(8000);
 }
 
+async function clickTab(client, tabName) {
+  const result = await client.send("Runtime.evaluate", {
+    expression: `(() => {
+      const tabName = ${JSON.stringify(tabName)};
+      const tabs = [...document.querySelectorAll('[role="tab"], button')];
+      const tab = tabs.find((element) => (element.innerText || '').trim().includes(tabName));
+      if (!tab) return false;
+      tab.click();
+      window.scrollTo(0, 0);
+      return true;
+    })()`,
+    returnByValue: true,
+  });
+  if (!result.result?.value) {
+    throw new Error(`Could not find Streamlit tab: ${tabName}`);
+  }
+}
+
+async function captureViewport(client, outputPath) {
+  await client.send("Runtime.evaluate", {
+    expression: "window.scrollTo(0, 0)",
+    returnByValue: true,
+  });
+  await sleep(1000);
+  const screenshot = await client.send("Page.captureScreenshot", {
+    format: "png",
+    fromSurface: true,
+    captureBeyondViewport: false,
+  });
+  await fs.writeFile(outputPath, Buffer.from(screenshot.data, "base64"));
+  console.log(outputPath);
+}
+
 async function main() {
-  await fs.mkdir(path.dirname(OUTPUT), { recursive: true });
+  await fs.mkdir(ASSETS_DIR, { recursive: true });
   await fs.rm(PROFILE_DIR, { recursive: true, force: true });
   await fs.mkdir(PROFILE_DIR, { recursive: true });
 
@@ -170,15 +228,15 @@ async function main() {
       mobile: false,
     });
     await client.send("Page.navigate", { url: URL });
-    await waitForStreamlitContent(client);
-    const screenshot = await client.send("Page.captureScreenshot", {
-      format: "png",
-      fromSurface: true,
-      captureBeyondViewport: false,
-    });
-    await fs.writeFile(OUTPUT, Buffer.from(screenshot.data, "base64"));
+    await waitForStreamlitContent(client, captures[0].markers, captures[0].minPlots);
+
+    for (const capture of captures) {
+      await clickTab(client, capture.tab);
+      await waitForStreamlitContent(client, capture.markers, capture.minPlots);
+      await captureViewport(client, path.join(ASSETS_DIR, capture.output));
+    }
+
     client.ws.close();
-    console.log(OUTPUT);
   } finally {
     browser.kill();
     try {

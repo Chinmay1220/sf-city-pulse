@@ -23,9 +23,8 @@
 
 ## Dashboard Gallery
 
-The README hero shows the Executive Pulse view. The gallery below adds the
-district equity, construction pressure, neighborhood drilldown, and live
-Streamlit app views.
+The README hero shows the Executive Pulse view. The gallery below adds BI-style
+dashboard variants plus real screenshots from the Streamlit app tabs.
 
 <table>
   <tr>
@@ -44,8 +43,27 @@ Streamlit app views.
       <img src="docs/assets/sf-city-pulse-dashboard-neighborhood.png" alt="Neighborhood drilldown dashboard for Mission showing monthly requests, permits, response time, and recent monthly detail">
     </td>
     <td width="50%">
-      <strong>Streamlit App Screenshot</strong><br>
+      <strong>Streamlit City Overview</strong><br>
       <img src="docs/assets/sf-city-pulse-streamlit.png" alt="Live Streamlit dashboard screenshot showing filters, City Overview tab, KPI metrics, monthly activity trend, top neighborhoods, and slow-response table">
+    </td>
+  </tr>
+</table>
+
+### Streamlit Tab Screenshots
+
+<table>
+  <tr>
+    <td width="33%">
+      <strong>District Equity</strong><br>
+      <img src="docs/assets/sf-city-pulse-streamlit-district-equity.png" alt="Streamlit District Equity tab showing district response time index, District 7 monthly response time, and district summary table">
+    </td>
+    <td width="33%">
+      <strong>Construction vs Complaints</strong><br>
+      <img src="docs/assets/sf-city-pulse-streamlit-construction.png" alt="Streamlit Construction vs Complaints tab showing minimum request slider, construction activity scatter plot, and ranking tables">
+    </td>
+    <td width="33%">
+      <strong>Neighborhood Drilldown</strong><br>
+      <img src="docs/assets/sf-city-pulse-streamlit-neighborhood.png" alt="Streamlit Neighborhood Drilldown tab showing Mission KPIs, monthly profile chart, and district breakdown table">
     </td>
   </tr>
 </table>
