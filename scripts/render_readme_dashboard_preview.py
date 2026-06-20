@@ -252,10 +252,16 @@ def render_construction_dashboard(df: pd.DataFrame, output_path: Path) -> None:
     cost_sorted = cost_leaders.sort_values("estimated_cost").copy()
     cost_sorted["display_name"] = cost_sorted["NEIGHBORHOOD"].apply(short_label)
     y_positions = range(len(cost_sorted))
+    max_cost = cost_sorted["estimated_cost"].max()
     ax_cost.barh(y_positions, cost_sorted["estimated_cost"], color=GOLD, alpha=0.88)
-    ax_cost.set_yticks(list(y_positions), cost_sorted["display_name"])
+    ax_cost.set_yticks([])
+    ax_cost.set_xlim(-max_cost * 0.38, max_cost * 1.1)
+    tick_step = 200_000_000
+    tick_max = int(((max_cost * 1.05) // tick_step + 1) * tick_step)
+    ax_cost.set_xticks(list(range(0, tick_max + 1, tick_step)))
     ax_cost.xaxis.set_major_formatter(FuncFormatter(k_formatter))
-    ax_cost.tick_params(axis="y", labelsize=8.2, colors=INK)
+    for y, row in zip(y_positions, cost_sorted.itertuples(index=False)):
+        ax_cost.text(-max_cost * 0.36, y, row.display_name, va="center", fontsize=8.2, color=INK)
     clean_axis(ax_cost)
     ax_cost.grid(True, axis="x", color=GRID, linewidth=0.8)
     ax_cost.grid(False, axis="y")
