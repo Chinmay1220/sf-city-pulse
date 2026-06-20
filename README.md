@@ -21,6 +21,35 @@
 > generating disproportionate 311 complaints, and are response times equitable
 > across supervisor districts?
 
+## Dashboard Gallery
+
+The README hero shows the Executive Pulse view. The gallery below adds the
+district equity, construction pressure, neighborhood drilldown, and live
+Streamlit app views.
+
+<table>
+  <tr>
+    <td width="50%">
+      <strong>District Equity Dashboard</strong><br>
+      <img src="docs/assets/sf-city-pulse-dashboard-equity.png" alt="District equity dashboard showing response index by district, District 7 versus city trend, and ranked district watchlist">
+    </td>
+    <td width="50%">
+      <strong>Construction Pressure Dashboard</strong><br>
+      <img src="docs/assets/sf-city-pulse-dashboard-construction.png" alt="Construction pressure dashboard showing permit volume, estimated cost, permits versus 311 requests, and permit-to-complaint ratio leaders">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>Neighborhood Drilldown Dashboard</strong><br>
+      <img src="docs/assets/sf-city-pulse-dashboard-neighborhood.png" alt="Neighborhood drilldown dashboard for Mission showing monthly requests, permits, response time, and recent monthly detail">
+    </td>
+    <td width="50%">
+      <strong>Streamlit App Screenshot</strong><br>
+      <img src="docs/assets/sf-city-pulse-streamlit.png" alt="Live Streamlit dashboard screenshot showing filters, City Overview tab, KPI metrics, monthly activity trend, top neighborhoods, and slow-response table">
+    </td>
+  </tr>
+</table>
+
 ## Architecture
 
 ```mermaid
